@@ -132,6 +132,8 @@ static dispatch_once_t onceToken;
             self.audioPlayer = [AVQueuePlayer queuePlayerWithItems:[NSArray arrayWithObject:playerItem]];
         }
     }
+    
+    _audioPlayer.actionAtItemEnd = AVPlayerActionAtItemEndPause; // This heals items mix-up when item duration < 1 sec.
 }
 
 - (void)backgroundPlayable
@@ -381,12 +383,6 @@ static dispatch_once_t onceToken;
 {
     for (AVPlayerItem *obj in self.audioPlayer.items) {
         [obj seekToTime:kCMTimeZero];
-        @try {
-            [obj removeObserver:self forKeyPath:@"loadedTimeRanges" context:nil];
-            [obj removeObserver:self forKeyPath:@"status" context:nil];
-        } @catch(id anException) {
-            //do nothing, obviously it wasn't attached because an exception was thrown
-        }
     }
     
     self.playerItems = [self isMemoryCached] ? [NSArray array] : nil;
