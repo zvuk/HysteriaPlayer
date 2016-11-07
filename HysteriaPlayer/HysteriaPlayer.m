@@ -9,8 +9,8 @@
 #import <objc/runtime.h>
 
 #if TARGET_OS_IPHONE
-    #import <UIKit/UIKit.h>
-    #import <AudioToolbox/AudioSession.h>
+#import <UIKit/UIKit.h>
+#import <AudioToolbox/AudioSession.h>
 #endif
 
 static const void *Hysteriatag = &Hysteriatag;
@@ -30,10 +30,10 @@ typedef NS_ENUM(NSInteger, PauseReason) {
     
     NSInteger prepareingItemHash;
     
-    #if TARGET_OS_IPHONE
+#if TARGET_OS_IPHONE
     UIBackgroundTaskIdentifier bgTaskId;
     UIBackgroundTaskIdentifier removedId;
-    #endif
+#endif
     
     dispatch_queue_t HBGQueue;
 }
@@ -75,14 +75,14 @@ static dispatch_once_t onceToken;
 
 + (void)showAlertWithError:(NSError *)error
 {
-     #if TARGET_OS_IPHONE
+#if TARGET_OS_IPHONE
     UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Player errors"
                                                     message:[error localizedDescription]
                                                    delegate:nil
                                           cancelButtonTitle:@"OK"
                                           otherButtonTitles:nil, nil];
     [alert show];
-     #endif
+#endif
 }
 
 - (id)init {
@@ -261,7 +261,7 @@ static dispatch_once_t onceToken;
     }
     self.lastItemIndex = index;
     [self.playedItems addObject:@(index)];
-
+    
     if ([self.delegate respondsToSelector:@selector(hysteriaPlayerWillChangedAtIndex:)]) {
         [self.delegate hysteriaPlayerWillChangedAtIndex:self.lastItemIndex];
     }
@@ -308,27 +308,18 @@ static dispatch_once_t onceToken;
 - (void)setupPlayerItemWithUrl:(NSURL *)url index:(NSInteger)index
 {
     AVURLAsset *asset = [[AVURLAsset alloc] initWithURL:url options:nil];
-    NSArray *keys = @[@"playable"];
-    
     AVPlayerItem *item = [AVPlayerItem playerItemWithAsset:asset];
+    [self setHysteriaIndex:item key:[NSNumber numberWithInteger:index]];
     
-    [asset loadValuesAsynchronouslyForKeys:keys completionHandler:^() {
-        
-        dispatch_async(dispatch_get_main_queue(), ^{
-            
-            [self setHysteriaIndex:item key:[NSNumber numberWithInteger:index]];
-            
-            if (self.isMemoryCached) {
-                NSMutableArray *playerItems = [NSMutableArray arrayWithArray:self.playerItems];
-                [playerItems addObject:item];
-                self.playerItems = playerItems;
-            }
-            
-            if ([self getLastItemIndex] == index) {
-                [self insertPlayerItem:item];
-            }
-        });
-    }];
+    if (self.isMemoryCached) {
+        NSMutableArray *playerItems = [NSMutableArray arrayWithArray:self.playerItems];
+        [playerItems addObject:item];
+        self.playerItems = playerItems;
+    }
+    
+    if ([self getLastItemIndex] == index) {
+        [self insertPlayerItem:item];
+    }
 }
 
 
@@ -353,7 +344,7 @@ static dispatch_once_t onceToken;
     if (_shuffleMode == HysteriaPlayerShuffleModeOn || _repeatMode == HysteriaPlayerRepeatModeOnce) {
         return;
     }
-
+    
     NSInteger nowIndex = self.lastItemIndex;
     BOOL findInPlayerItems = NO;
     NSInteger itemsCount = [self hysteriaPlayerItemsCount];
@@ -837,7 +828,7 @@ static dispatch_once_t onceToken;
     if (![item isEqual:self.audioPlayer.currentItem]) {
         return;
     }
-
+    
     NSNumber *currentItemIndex = [self getHysteriaIndex:self.audioPlayer.currentItem];
     if (currentItemIndex) {
         if (_repeatMode == HysteriaPlayerRepeatModeOnce) {
@@ -904,7 +895,7 @@ static dispatch_once_t onceToken;
             return NSNotFound;
         }
     }
-
+    
     NSInteger index;
     do {
         index = arc4random() % itemsCount;
