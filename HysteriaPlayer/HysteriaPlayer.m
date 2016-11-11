@@ -362,7 +362,13 @@ static dispatch_once_t onceToken;
 {
     if ([self.audioPlayer.items count] > 1) {
         for (int i = 1 ; i < [self.audioPlayer.items count] ; i ++) {
-            [self.audioPlayer removeItem:[self.audioPlayer.items objectAtIndex:i]];
+            AVPlayerItem *item = [self.audioPlayer.items objectAtIndex:i];
+            @try {
+                [item removeObserver:self forKeyPath:@"loadedTimeRanges" context:nil];
+                [item removeObserver:self forKeyPath:@"status" context:nil];
+            } @catch(id anException) {
+            }
+            [self.audioPlayer removeItem:item];
         }
     }
     if ([self.audioPlayer canInsertItem:item afterItem:nil]) {
@@ -374,6 +380,12 @@ static dispatch_once_t onceToken;
 {
     for (AVPlayerItem *obj in self.audioPlayer.items) {
         [obj seekToTime:kCMTimeZero];
+        @try {
+            [obj removeObserver:self forKeyPath:@"loadedTimeRanges" context:nil];
+            [obj removeObserver:self forKeyPath:@"status" context:nil];
+        } @catch(id anException) {
+            //do nothing, obviously it wasn't attached because an exception was thrown
+        }
     }
     
     self.playerItems = [self isMemoryCached] ? [NSArray array] : nil;
@@ -383,7 +395,13 @@ static dispatch_once_t onceToken;
 - (void)removeQueuesAtPlayer
 {
     while (self.audioPlayer.items.count > 1) {
-        [self.audioPlayer removeItem:[self.audioPlayer.items objectAtIndex:1]];
+        AVPlayerItem *item = [self.audioPlayer.items objectAtIndex:1];
+        @try {
+            [item removeObserver:self forKeyPath:@"loadedTimeRanges" context:nil];
+            [item removeObserver:self forKeyPath:@"status" context:nil];
+        } @catch(id anException) {
+        }
+        [self.audioPlayer removeItem:item];
     }
 }
 
@@ -399,6 +417,11 @@ static dispatch_once_t onceToken;
                 
                 if ([self.audioPlayer.items indexOfObject:item] != NSNotFound) {
                     [self.audioPlayer removeItem:item];
+                    @try {
+                        [item removeObserver:self forKeyPath:@"loadedTimeRanges" context:nil];
+                        [item removeObserver:self forKeyPath:@"status" context:nil];
+                    } @catch(id anException) {
+                    }
                 }
             } else if (checkIndex > index) {
                 [self setHysteriaIndex:item key:[NSNumber numberWithInteger:checkIndex -1]];
