@@ -28,6 +28,7 @@
 
 #import <AvailabilityMacros.h>
 #import <AVFoundation/AVFoundation.h>
+#import "HysteriaItem.h"
 
 typedef NS_ENUM(NSInteger, HysteriaPlayerReadyToPlay) {
     HysteriaPlayerReadyToPlayPlayer = 3000,
@@ -46,15 +47,15 @@ typedef NS_ENUM(NSInteger, HysteriaPlayerFailed) {
 
 @optional
 - (void)hysteriaPlayerWillChangedAtIndex:(NSInteger)index;
-- (void)hysteriaPlayerCurrentItemChanged:(AVPlayerItem *)item;
+- (void)hysteriaPlayerCurrentItemChanged:(HysteriaItem *)item;
 - (void)hysteriaPlayerRateChanged:(BOOL)isPlaying;
 - (void)hysteriaPlayerDidReachEnd;
 - (void)hysteriaPlayerCurrentItemPreloaded:(CMTime)time;
 - (void)hysteriaPlayerDidFailed:(HysteriaPlayerFailed)identifier error:(NSError *)error;
 - (void)hysteriaPlayerReadyToPlay:(HysteriaPlayerReadyToPlay)identifier;
 
-- (void)hysteriaPlayerItemFailedToPlayEndTime:(AVPlayerItem *)item error:(NSError *)error;
-- (void)hysteriaPlayerItemPlaybackStall:(AVPlayerItem *)item;
+- (void)hysteriaPlayerItemFailedToPlayEndTime:(HysteriaItem *)item error:(NSError *)error;
+- (void)hysteriaPlayerItemPlaybackStall:(HysteriaItem *)item;
 
 @end
 
@@ -135,9 +136,9 @@ typedef NS_ENUM(NSInteger, HysteriaPlayerShuffleMode) {
 - (void)setItemsCount:(NSInteger)count DEPRECATED_MSG_ATTRIBUTE("use HysteriaPlayerDataSource instead.");
 
 /**
- *   This method is necessary if you implement hysteriaPlayerAsyncSetUrlForItemAtIndex:preBuffer: delegate method, 
-     provide source URL to HysteriaPlayer.
-     Should not use this method outside of hysteriaPlayerAsyncSetUrlForItemAtIndex:preBuffer: scope.
+ *   This method is necessary if you implement hysteriaPlayerAsyncSetUrlForItemAtIndex:preBuffer: delegate method,
+ provide source URL to HysteriaPlayer.
+ Should not use this method outside of hysteriaPlayerAsyncSetUrlForItemAtIndex:preBuffer: scope.
  *
  *  @param url   source URL
  *  @param index index which hysteriaPlayerAsyncSetUrlForItemAtIndex:preBuffer: sent you
@@ -169,7 +170,7 @@ typedef NS_ENUM(NSInteger, HysteriaPlayerShuffleMode) {
 
 - (BOOL)isPlaying;
 - (NSInteger)getLastItemIndex;
-- (AVPlayerItem *)getCurrentItem;
+- (HysteriaItem *)getCurrentItem;
 - (HysteriaPlayerStatus)getHysteriaPlayerStatus;
 
 - (void)addDelegate:(id<HysteriaPlayerDelegate>)delegate DEPRECATED_MSG_ATTRIBUTE("set delegate property instead");
@@ -196,7 +197,7 @@ typedef NS_ENUM(NSInteger, HysteriaPlayerShuffleMode) {
  *
  *  @return index of the item
  */
-- (NSNumber *)getHysteriaIndex:(AVPlayerItem *)item;
+- (NSInteger)getHysteriaIndex:(HysteriaItem *)item;
 
 - (void)deprecatePlayer;
 
