@@ -820,9 +820,12 @@ static dispatch_once_t onceToken;
         NSArray *timeRanges = (NSArray *)[change objectForKey:NSKeyValueChangeNewKey];
         if (timeRanges && [timeRanges count]) {
             CMTimeRange timerange = [[timeRanges objectAtIndex:0] CMTimeRangeValue];
+            CMTime preloadedTime = CMTimeAdd(timerange.start, timerange.duration);
+            HysteriaItem *item = object;
+            item.bufferedTime = CMTimeGetSeconds(preloadedTime);
             
             if ([self.delegate respondsToSelector:@selector(hysteriaPlayerCurrentItemPreloaded:)]) {
-                [self.delegate hysteriaPlayerCurrentItemPreloaded:CMTimeAdd(timerange.start, timerange.duration)];
+                [self.delegate hysteriaPlayerCurrentItemPreloaded:preloadedTime];
             }
             
             if (self.audioPlayer.rate == 0 && _pauseReason != PauseReasonForced) {
@@ -849,38 +852,47 @@ static dispatch_once_t onceToken;
 - (void)playerItemDidReachEnd:(NSNotification *)notification
 {
     HysteriaItem *item = [notification object];
-    if (![item isEqual:self.audioPlayer.currentItem]) {
+    HysteriaItem *currentItem = self.audioPlayer.currentItem;
+    
+    if (!currentItem
+        || ![item isEqual:currentItem]) {
         return;
     }
-    HysteriaItem *currentItem = self.audioPlayer.currentItem;
-    if (currentItem) {
-        NSInteger currentItemIndex = currentItem.index;
-        
-        if (_repeatMode == HysteriaPlayerRepeatModeOnce) {
-            [self fetchAndPlayPlayerItem:currentItemIndex];
-        } else if (_shuffleMode == HysteriaPlayerShuffleModeOn) {
-            NSInteger nextIndex = [self randomIndex];
-            if (nextIndex != NSNotFound) {
-                [self fetchAndPlayPlayerItem:[self randomIndex]];
-            } else {
-                _pauseReason = PauseReasonForced;
-                if ([self.delegate respondsToSelector:@selector(hysteriaPlayerDidReachEnd)]) {
-                    [self.delegate hysteriaPlayerDidReachEnd];
-                }
-            }
+    
+    
+    if ([self getPlayingItemDurationTime] > item.bufferedTime) {
+        if ([self.delegate respondsToSelector:@selector(hysteriaPlayerItemPlaybackStall:)]) {
+            [self.delegate hysteriaPlayerItemPlaybackStall:notification.object];
+        }
+        return;
+    }
+    
+    NSInteger currentItemIndex = currentItem.index;
+    
+    if (_repeatMode == HysteriaPlayerRepeatModeOnce) {
+        [self fetchAndPlayPlayerItem:currentItemIndex];
+    } else if (_shuffleMode == HysteriaPlayerShuffleModeOn) {
+        NSInteger nextIndex = [self randomIndex];
+        if (nextIndex != NSNotFound) {
+            [self fetchAndPlayPlayerItem:[self randomIndex]];
         } else {
-            if (self.audioPlayer.items.count == 1 || !isPreBuffered) {
-                if (currentItemIndex + 1 < [self hysteriaPlayerItemsCount]) {
-                    [self playNext];
-                } else {
-                    if (_repeatMode == HysteriaPlayerRepeatModeOff) {
-                        _pauseReason = PauseReasonForced;
-                        if ([self.delegate respondsToSelector:@selector(hysteriaPlayerDidReachEnd)]) {
-                            [self.delegate hysteriaPlayerDidReachEnd];
-                        }
-                    } else {
-                        [self fetchAndPlayPlayerItem:0];
+            _pauseReason = PauseReasonForced;
+            if ([self.delegate respondsToSelector:@selector(hysteriaPlayerDidReachEnd)]) {
+                [self.delegate hysteriaPlayerDidReachEnd];
+            }
+        }
+    } else {
+        if (self.audioPlayer.items.count == 1 || !isPreBuffered) {
+            if (currentItemIndex + 1 < [self hysteriaPlayerItemsCount]) {
+                [self playNext];
+            } else {
+                if (_repeatMode == HysteriaPlayerRepeatModeOff) {
+                    _pauseReason = PauseReasonForced;
+                    if ([self.delegate respondsToSelector:@selector(hysteriaPlayerDidReachEnd)]) {
+                        [self.delegate hysteriaPlayerDidReachEnd];
                     }
+                } else {
+                    [self fetchAndPlayPlayerItem:0];
                 }
             }
         }

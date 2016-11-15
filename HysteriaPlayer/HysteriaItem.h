@@ -11,5 +11,6 @@
 @interface HysteriaItem : AVPlayerItem
 
 @property (nonatomic) NSInteger index;
+@property (nonatomic) NSTimeInterval bufferedTime;
 
 @end
