@@ -13,7 +13,7 @@
 #import <AudioToolbox/AudioSession.h>
 #endif
 
-static const void *Hysteriatag = &Hysteriatag;
+static const NSTimeInterval HyseriaPlayerFinishedPlaybackStallingEpsilon = 1.;
 
 typedef NS_ENUM(NSInteger, PauseReason) {
     PauseReasonNone,
@@ -860,7 +860,8 @@ static dispatch_once_t onceToken;
     }
     
     
-    if ([self getPlayingItemDurationTime] > item.bufferedTime) {
+    if ([self getPlayingItemDurationTime] > item.bufferedTime + HyseriaPlayerFinishedPlaybackStallingEpsilon) {
+        NSLog(@"Hysteria stalled on time %f with item of duration %f", item.bufferedTime, [self getPlayingItemDurationTime]);
         if ([self.delegate respondsToSelector:@selector(hysteriaPlayerItemPlaybackStall:)]) {
             [self.delegate hysteriaPlayerItemPlaybackStall:notification.object];
         }
