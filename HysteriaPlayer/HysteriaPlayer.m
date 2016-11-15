@@ -131,6 +131,10 @@ static dispatch_once_t onceToken;
     }
     
     _audioPlayer.actionAtItemEnd = AVPlayerActionAtItemEndPause; // This heals items mix-up when item duration < 1 sec.
+    
+    if ([_audioPlayer respondsToSelector:@selector(automaticallyWaitsToMinimizeStalling)]) {
+        _audioPlayer.automaticallyWaitsToMinimizeStalling = NO;
+    }
 }
 
 - (void)backgroundPlayable
