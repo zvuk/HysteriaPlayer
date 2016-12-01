@@ -10,6 +10,8 @@
 
 @interface HysteriaItem : AVPlayerItem
 
+- (instancetype)initWithAsset:(AVAsset *)asset index:(NSUInteger)index;
+
 @property (nonatomic) NSInteger index;
 @property (nonatomic) NSTimeInterval bufferedTime;
 

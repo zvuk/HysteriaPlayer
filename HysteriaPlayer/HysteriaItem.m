@@ -10,4 +10,15 @@
 
 @implementation HysteriaItem
 
+- (instancetype)initWithAsset:(AVAsset *)asset index:(NSUInteger)index
+{
+    self = [super initWithAsset:asset];
+    
+    if (self) {
+        _index = index;
+    }
+    
+    return self;
+}
+
 @end

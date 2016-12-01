@@ -300,8 +300,7 @@ static dispatch_once_t onceToken;
 - (void)setupPlayerItemWithUrl:(NSURL *)url index:(NSInteger)index
 {
     AVURLAsset *asset = [[AVURLAsset alloc] initWithURL:url options:nil];
-    HysteriaItem *item = [HysteriaItem playerItemWithAsset:asset];
-    item.index = index;
+    HysteriaItem *item = [[HysteriaItem alloc] initWithAsset:asset index:index];
     
     if (self.isMemoryCached) {
         NSMutableArray *playerItems = [NSMutableArray arrayWithArray:self.playerItems];
