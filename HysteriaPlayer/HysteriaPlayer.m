@@ -101,7 +101,7 @@ static dispatch_once_t onceToken;
     tookAudioFocus = YES;
     
     [self backgroundPlayable];
-    [self playEmptySound];
+    [self createAudioPlayer];
     [self AVAudioSessionNotification];
 }
 
@@ -115,7 +115,7 @@ static dispatch_once_t onceToken;
 
 - (void)setItemsCount:(NSInteger)count {}
 
-- (void)playEmptySound
+- (void)createAudioPlayer
 {
     if (self.skipEmptySoundPlaying) {
         self.audioPlayer = [[AVQueuePlayer alloc] init];
@@ -135,6 +135,10 @@ static dispatch_once_t onceToken;
     if ([_audioPlayer respondsToSelector:@selector(automaticallyWaitsToMinimizeStalling)]) {
         _audioPlayer.automaticallyWaitsToMinimizeStalling = NO;
     }
+    
+    [self.audioPlayer addObserver:self forKeyPath:@"status" options:NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew context:nil];
+    [self.audioPlayer addObserver:self forKeyPath:@"rate" options:0 context:nil];
+    [self.audioPlayer addObserver:self forKeyPath:@"currentItem" options:NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld context:nil];
 }
 
 - (void)backgroundPlayable
@@ -232,10 +236,6 @@ static dispatch_once_t onceToken;
                                                  name:AVAudioSessionRouteChangeNotification
                                                object:nil];
 #endif
-    
-    [self.audioPlayer addObserver:self forKeyPath:@"status" options:NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew context:nil];
-    [self.audioPlayer addObserver:self forKeyPath:@"rate" options:0 context:nil];
-    [self.audioPlayer addObserver:self forKeyPath:@"currentItem" options:NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld context:nil];
 }
 
 #pragma mark -
@@ -313,7 +313,6 @@ static dispatch_once_t onceToken;
     }
 }
 
-
 - (BOOL)findSourceInPlayerItems:(NSInteger)index
 {
     for (HysteriaItem *item in self.playerItems) {
@@ -364,6 +363,7 @@ static dispatch_once_t onceToken;
             [self.audioPlayer removeItem:item];
         }
     }
+    
     if ([self.audioPlayer canInsertItem:item afterItem:nil]) {
         [self.audioPlayer insertItem:item afterItem:nil];
     }
@@ -965,6 +965,35 @@ static dispatch_once_t onceToken;
     self.audioPlayer = nil;
     
     onceToken = 0;
+}
+
+- (void)resetPlayer
+{
+    if (!self.audioPlayer) {
+        return;
+    }
+    
+    @try {
+        [self.audioPlayer removeObserver:self forKeyPath:@"status" context:nil];
+        [self.audioPlayer removeObserver:self forKeyPath:@"rate" context:nil];
+        [self.audioPlayer removeObserver:self forKeyPath:@"currentItem" context:nil];
+    } @catch(id anException) {
+        //do nothing, obviously it wasn't attached because an exception was thrown
+    }
+    
+    @try {
+        [self.audioPlayer.currentItem removeObserver:self forKeyPath:@"loadedTimeRanges" context:nil];
+        [self.audioPlayer.currentItem removeObserver:self forKeyPath:@"status" context:nil];
+    } @catch(id anException) {
+        //do nothing, obviously it wasn't attached because an exception was thrown
+    }
+    
+    [self removeAllItems];
+    
+    [self.audioPlayer pause];
+    self.audioPlayer = nil;
+    
+    [self createAudioPlayer];
 }
 
 #pragma mark -

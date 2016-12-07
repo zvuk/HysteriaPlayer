@@ -200,6 +200,7 @@ typedef NS_ENUM(NSInteger, HysteriaPlayerShuffleMode) {
 - (NSInteger)getHysteriaIndex:(HysteriaItem *)item;
 
 - (void)deprecatePlayer;
+- (void)resetPlayer;
 
 @end
 
