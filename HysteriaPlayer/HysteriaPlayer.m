@@ -860,47 +860,47 @@ static dispatch_once_t onceToken;
     
     NSTimeInterval itemDuration = [self getPlayingItemDurationTime];
     NSTimeInterval currentTime = [self getPlayingItemCurrentTime];
-    BOOL isAtTheEndOfTheItem = itemDuration - (currentTime + HyseriaPlayerFinishedPlaybackStallingEpsilon) < 0;
+    BOOL isAtTheEndOfTheItem = itemDuration <= (currentTime + HyseriaPlayerFinishedPlaybackStallingEpsilon);
+    BOOL isFullyBuffered = itemDuration <= (item.bufferedTime + HyseriaPlayerFinishedPlaybackStallingEpsilon);
     
-    if (isAtTheEndOfTheItem
-        || (item.bufferedTime < itemDuration
-        && itemDuration > currentTime + HyseriaPlayerFinishedPlaybackStallingEpsilon)) {
+    if (isAtTheEndOfTheItem || isFullyBuffered) {
+        
+        NSInteger currentItemIndex = currentItem.index;
+        
+        if (_repeatMode == HysteriaPlayerRepeatModeOnce) {
+            [self fetchAndPlayPlayerItem:currentItemIndex];
+        } else if (_shuffleMode == HysteriaPlayerShuffleModeOn) {
+            NSInteger nextIndex = [self randomIndex];
+            if (nextIndex != NSNotFound) {
+                [self fetchAndPlayPlayerItem:[self randomIndex]];
+            } else {
+                _pauseReason = PauseReasonForced;
+                if ([self.delegate respondsToSelector:@selector(hysteriaPlayerDidReachEnd)]) {
+                    [self.delegate hysteriaPlayerDidReachEnd];
+                }
+            }
+        } else {
+            if (self.audioPlayer.items.count == 1 || !isPreBuffered) {
+                if (currentItemIndex + 1 < [self hysteriaPlayerItemsCount]) {
+                    [self playNext];
+                } else {
+                    if (_repeatMode == HysteriaPlayerRepeatModeOff) {
+                        _pauseReason = PauseReasonForced;
+                        if ([self.delegate respondsToSelector:@selector(hysteriaPlayerDidReachEnd)]) {
+                            [self.delegate hysteriaPlayerDidReachEnd];
+                        }
+                    } else {
+                        [self fetchAndPlayPlayerItem:0];
+                    }
+                }
+            }
+        }
+    } else {
         NSLog(@"Hysteria stalled on time %f with item of duration %f currentTime %f", item.bufferedTime, itemDuration, currentItem);
         if ([self.delegate respondsToSelector:@selector(hysteriaPlayerItemPlaybackStall:)]) {
             [self.delegate hysteriaPlayerItemPlaybackStall:notification.object];
         }
         return;
-    }
-    
-    NSInteger currentItemIndex = currentItem.index;
-    
-    if (_repeatMode == HysteriaPlayerRepeatModeOnce) {
-        [self fetchAndPlayPlayerItem:currentItemIndex];
-    } else if (_shuffleMode == HysteriaPlayerShuffleModeOn) {
-        NSInteger nextIndex = [self randomIndex];
-        if (nextIndex != NSNotFound) {
-            [self fetchAndPlayPlayerItem:[self randomIndex]];
-        } else {
-            _pauseReason = PauseReasonForced;
-            if ([self.delegate respondsToSelector:@selector(hysteriaPlayerDidReachEnd)]) {
-                [self.delegate hysteriaPlayerDidReachEnd];
-            }
-        }
-    } else {
-        if (self.audioPlayer.items.count == 1 || !isPreBuffered) {
-            if (currentItemIndex + 1 < [self hysteriaPlayerItemsCount]) {
-                [self playNext];
-            } else {
-                if (_repeatMode == HysteriaPlayerRepeatModeOff) {
-                    _pauseReason = PauseReasonForced;
-                    if ([self.delegate respondsToSelector:@selector(hysteriaPlayerDidReachEnd)]) {
-                        [self.delegate hysteriaPlayerDidReachEnd];
-                    }
-                } else {
-                    [self fetchAndPlayPlayerItem:0];
-                }
-            }
-        }
     }
 }
 
