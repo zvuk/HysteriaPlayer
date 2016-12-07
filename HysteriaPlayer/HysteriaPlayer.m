@@ -858,9 +858,14 @@ static dispatch_once_t onceToken;
         return;
     }
     
+    NSTimeInterval itemDuration = [self getPlayingItemDurationTime];
+    NSTimeInterval currentTime = [self getPlayingItemCurrentTime];
+    BOOL isAtTheEndOfTheItem = itemDuration - (currentTime + HyseriaPlayerFinishedPlaybackStallingEpsilon) < 0;
     
-    if ([self getPlayingItemDurationTime] > item.bufferedTime + HyseriaPlayerFinishedPlaybackStallingEpsilon) {
-        NSLog(@"Hysteria stalled on time %f with item of duration %f", item.bufferedTime, [self getPlayingItemDurationTime]);
+    if (isAtTheEndOfTheItem
+        || (item.bufferedTime < itemDuration
+        && itemDuration > currentTime + HyseriaPlayerFinishedPlaybackStallingEpsilon)) {
+        NSLog(@"Hysteria stalled on time %f with item of duration %f currentTime %f", item.bufferedTime, itemDuration, currentItem);
         if ([self.delegate respondsToSelector:@selector(hysteriaPlayerItemPlaybackStall:)]) {
             [self.delegate hysteriaPlayerItemPlaybackStall:notification.object];
         }
