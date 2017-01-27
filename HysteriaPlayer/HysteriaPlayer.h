@@ -123,7 +123,6 @@ typedef NS_ENUM(NSInteger, HysteriaPlayerShuffleMode) {
 @property (nonatomic, strong, readonly) NSArray *playerItems;
 @property (nonatomic, readonly) BOOL emptySoundPlaying;
 @property (nonatomic) BOOL skipEmptySoundPlaying;
-@property (nonatomic) BOOL popAlertWhenError;
 
 + (HysteriaPlayer *)sharedInstance;
 
