@@ -14,5 +14,6 @@
 
 @property (nonatomic) NSInteger index;
 @property (nonatomic) NSTimeInterval bufferedTime;
+@property (nonatomic) NSTimeInterval offsetTime;
 
 @end

@@ -123,6 +123,7 @@ typedef NS_ENUM(NSInteger, HysteriaPlayerShuffleMode) {
 @property (nonatomic, strong, readonly) NSArray *playerItems;
 @property (nonatomic, readonly) BOOL emptySoundPlaying;
 @property (nonatomic) BOOL skipEmptySoundPlaying;
+@property (nonatomic) NSTimeInterval offsetTime;
 
 + (HysteriaPlayer *)sharedInstance;
 
@@ -142,8 +143,9 @@ typedef NS_ENUM(NSInteger, HysteriaPlayerShuffleMode) {
  *  @param url   source URL
  *  @param index index which hysteriaPlayerAsyncSetUrlForItemAtIndex:preBuffer: sent you
  */
-- (void)setupPlayerItemWithUrl:(NSURL *)url index:(NSInteger)index;
-- (void)fetchAndPlayPlayerItem: (NSInteger )startAt;
+- (void)setupPlayerItemWithUrl:(NSURL *)url index:(NSInteger)index withOffset:(NSTimeInterval)timeOffset;
+- (void)fetchAndPlayPlayerItem:(NSInteger)startAt;
+- (void)fetchAndPlayPlayerItem:(NSInteger)startAt withOffset:(NSTimeInterval)timeOffset;
 - (void)removeAllItems;
 - (void)removeQueuesAtPlayer;
 
@@ -202,4 +204,3 @@ typedef NS_ENUM(NSInteger, HysteriaPlayerShuffleMode) {
 - (void)resetPlayer;
 
 @end
-
