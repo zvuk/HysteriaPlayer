@@ -367,8 +367,10 @@ static dispatch_once_t onceToken;
         }
     }
     
-    if ([self.audioPlayer canInsertItem:item afterItem:nil]) {
-        [self.audioPlayer insertItem:item afterItem:nil];
+    HysteriaItem *lastItem = [self.audioPlayer.items lastObject];
+    
+    if ([self.audioPlayer canInsertItem:item afterItem:lastItem]) {
+        [self.audioPlayer insertItem:item afterItem:lastItem];
     }
 }
 
