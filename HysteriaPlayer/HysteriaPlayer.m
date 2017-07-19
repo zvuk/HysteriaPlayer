@@ -797,6 +797,12 @@ static dispatch_once_t onceToken;
                 [self.delegate hysteriaPlayerCurrentItemChanged:newPlayerItem];
             }
             self.emptySoundPlaying = NO;
+            
+            if (newPlayerItem.status == AVPlayerItemStatusFailed) {
+                if ([self.delegate respondsToSelector:@selector(hysteriaPlayerDidFailed:error:)]) {
+                    [self.delegate hysteriaPlayerDidFailed:HysteriaPlayerFailedCurrentItem error:self.audioPlayer.currentItem.error];
+                }
+            }
         }
     }
     
