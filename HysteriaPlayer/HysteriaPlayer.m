@@ -718,7 +718,10 @@ static dispatch_once_t onceToken;
         [self pause];
     } else if (interuptionType == AVAudioSessionInterruptionTypeEnded && interruptedWhilePlaying) {
         interruptedWhilePlaying = NO;
-        [self play];
+        
+        if ([interuptionDict[AVAudioSessionInterruptionTypeKey] integerValue] == AVAudioSessionInterruptionOptionShouldResume) {
+            [self play];
+        }
     }
     if (!self.disableLogs) {
         NSLog(@"HysteriaPlayer: HysteriaPlayer interruption: %@", interuptionType == AVAudioSessionInterruptionTypeBegan ? @"began" : @"end");
