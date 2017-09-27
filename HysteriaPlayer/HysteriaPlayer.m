@@ -719,7 +719,7 @@ static dispatch_once_t onceToken;
     } else if (interuptionType == AVAudioSessionInterruptionTypeEnded && interruptedWhilePlaying) {
         interruptedWhilePlaying = NO;
         
-        if ([interuptionDict[AVAudioSessionInterruptionTypeKey] integerValue] == AVAudioSessionInterruptionOptionShouldResume) {
+        if ([interuptionDict[AVAudioSessionInterruptionOptionKey] integerValue] == AVAudioSessionInterruptionOptionShouldResume) {
             [self play];
         }
     }
