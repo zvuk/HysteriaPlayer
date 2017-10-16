@@ -719,7 +719,8 @@ static dispatch_once_t onceToken;
     } else if (interuptionType == AVAudioSessionInterruptionTypeEnded && interruptedWhilePlaying) {
         interruptedWhilePlaying = NO;
         
-        if ([interuptionDict[AVAudioSessionInterruptionOptionKey] integerValue] == AVAudioSessionInterruptionOptionShouldResume) {
+        if ([interuptionDict[AVAudioSessionInterruptionOptionKey] integerValue] == AVAudioSessionInterruptionOptionShouldResume
+            && self.audioPlayer.currentItem.status == AVPlayerStatusReadyToPlay) {
             [self play];
         }
     }
