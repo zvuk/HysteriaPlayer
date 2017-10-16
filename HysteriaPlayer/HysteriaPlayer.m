@@ -739,7 +739,9 @@ static dispatch_once_t onceToken;
     if (routeChangeType == AVAudioSessionRouteChangeReasonOldDeviceUnavailable && _pauseReason != PauseReasonForced) {
         routeChangedWhilePlaying = YES;
         [self pause];
-    } else if (routeChangeType == AVAudioSessionRouteChangeReasonNewDeviceAvailable && routeChangedWhilePlaying) {
+    } else if (routeChangeType == AVAudioSessionRouteChangeReasonNewDeviceAvailable
+               && routeChangedWhilePlaying
+               && self.audioPlayer.currentItem.status == AVPlayerStatusReadyToPlay) {
         routeChangedWhilePlaying = NO;
         [self play];
     }
