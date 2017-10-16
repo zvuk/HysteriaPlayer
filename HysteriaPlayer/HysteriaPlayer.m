@@ -739,11 +739,12 @@ static dispatch_once_t onceToken;
     if (routeChangeType == AVAudioSessionRouteChangeReasonOldDeviceUnavailable && _pauseReason != PauseReasonForced) {
         routeChangedWhilePlaying = YES;
         [self pause];
-    } else if (routeChangeType == AVAudioSessionRouteChangeReasonNewDeviceAvailable
-               && routeChangedWhilePlaying
-               && self.audioPlayer.currentItem.status == AVPlayerStatusReadyToPlay) {
+    } else if (routeChangeType == AVAudioSessionRouteChangeReasonNewDeviceAvailable && routeChangedWhilePlaying) {
         routeChangedWhilePlaying = NO;
-        [self play];
+        
+        if (self.audioPlayer.currentItem.status == AVPlayerStatusReadyToPlay) {
+            [self play];
+        }
     }
     if (!self.disableLogs) {
         NSLog(@"HysteriaPlayer: HysteriaPlayer routeChanged: %@", routeChangeType == AVAudioSessionRouteChangeReasonNewDeviceAvailable ? @"New Device Available" : @"Old Device Unavailable");
