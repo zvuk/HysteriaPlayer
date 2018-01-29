@@ -45,7 +45,7 @@ void AudioToolboxHelperCallback(void *custom_data, AudioQueueRef queue, AudioQue
     format.mBytesPerPacket   = format.mBytesPerFrame * format.mFramesPerPacket;
     format.mReserved         = 0;
     
-    OSStatus err = AudioQueueNewOutput(&format, ZVQAudioToolboxHelperCallback, NULL, CFRunLoopGetCurrent(), kCFRunLoopCommonModes, 0, &queue);
+    OSStatus err = AudioQueueNewOutput(&format, AudioToolboxHelperCallback, NULL, CFRunLoopGetCurrent(), kCFRunLoopCommonModes, 0, &queue);
     
     for (i = 0; i < NUM_BUFFERS; i++)
     {
@@ -53,7 +53,7 @@ void AudioToolboxHelperCallback(void *custom_data, AudioQueueRef queue, AudioQue
         
         buffers[i]->mAudioDataByteSize = BUFFER_SIZE;
         
-        ZVQAudioToolboxHelperCallback(NULL, queue, buffers[i]);
+        AudioToolboxHelperCallback(NULL, queue, buffers[i]);
     }
     
     err = AudioQueueStart(queue, NULL);
