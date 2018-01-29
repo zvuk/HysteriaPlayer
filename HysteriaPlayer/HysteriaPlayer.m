@@ -11,6 +11,7 @@
 #if TARGET_OS_IPHONE
 #import <UIKit/UIKit.h>
 #import <AudioToolbox/AudioSession.h>
+#import "AudioToolboxHelper.h"
 #endif
 
 static const NSTimeInterval HyseriaPlayerFinishedPlaybackStallingEpsilon = 1.;
@@ -88,6 +89,7 @@ static dispatch_once_t onceToken;
 {
     tookAudioFocus = YES;
     
+    [AudioToolboxHelper resetAudioQueue];
     [self backgroundPlayable];
     [self createAudioPlayer];
     [self AVAudioSessionNotification];
