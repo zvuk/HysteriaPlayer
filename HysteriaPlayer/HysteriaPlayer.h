@@ -185,16 +185,12 @@ typedef NS_ENUM(NSInteger, HysteriaPlayerShuffleMode) {
 
 /**
  *  Default is true
- *
- *  @param isMemoryCached cache
  */
 - (void)enableMemoryCached:(BOOL)memoryCache;
 - (BOOL)isMemoryCached;
 
 /**
  *  Indicating Playeritem's play index
- *
- *  @param item item
  *
  *  @return index of the item
  */
