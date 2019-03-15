@@ -124,6 +124,8 @@ typedef NS_ENUM(NSInteger, HysteriaPlayerShuffleMode) {
 @property (nonatomic, readonly) BOOL emptySoundPlaying;
 @property (nonatomic) BOOL skipEmptySoundPlaying;
 @property (nonatomic) NSTimeInterval offsetTime;
+/// Base URL for Referer header
+@property (nonatomic) NSString  *refererBaseURL;
 
 + (HysteriaPlayer *)sharedInstance;
 

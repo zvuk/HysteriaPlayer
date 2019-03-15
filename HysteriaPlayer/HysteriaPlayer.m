@@ -318,10 +318,10 @@ static dispatch_once_t onceToken;
 - (void)setupPlayerItemWithUrl:(NSURL *)url index:(NSInteger)index withOffset:(NSTimeInterval)timeOffset
 {
     NSDictionary *requestHeaders = nil;
-    if (url.baseURL) {
+    if (self.refererBaseURL) {
         requestHeaders = @{
             @"AVURLAssetHTTPHeaderFieldsKey": @{
-                HysteriaRefererHeaderKey:url.baseURL
+                HysteriaRefererHeaderKey:self.refererBaseURL
             }
         };
     }
