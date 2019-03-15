@@ -15,7 +15,7 @@
 #endif
 
 static const NSTimeInterval HyseriaPlayerFinishedPlaybackStallingEpsilon = 1.;
-static NSString *const HysteriaRefererHeaderKey = @"Referer"
+static NSString *const HysteriaRefererHeaderKey = @"Referer";
 
 typedef NS_ENUM(NSInteger, PauseReason) {
     PauseReasonNone,
