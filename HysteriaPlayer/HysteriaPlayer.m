@@ -15,7 +15,6 @@
 #endif
 
 static const NSTimeInterval HyseriaPlayerFinishedPlaybackStallingEpsilon = 1.;
-static NSString *const HysteriaRefererHeaderKey = @"Referer";
 
 typedef NS_ENUM(NSInteger, PauseReason) {
     PauseReasonNone,
@@ -318,12 +317,8 @@ static dispatch_once_t onceToken;
 - (void)setupPlayerItemWithUrl:(NSURL *)url index:(NSInteger)index withOffset:(NSTimeInterval)timeOffset
 {
     NSDictionary *requestHeaders = nil;
-    if (self.refererBaseURL) {
-        requestHeaders = @{
-            @"AVURLAssetHTTPHeaderFieldsKey": @{
-                HysteriaRefererHeaderKey:self.refererBaseURL
-            }
-        };
+    if (self.streamRequestHeaders) {
+        requestHeaders = @{ @"AVURLAssetHTTPHeaderFieldsKey": self.streamRequestHeaders };
     }
     AVURLAsset *asset = [[AVURLAsset alloc] initWithURL:url options:requestHeaders];
     HysteriaItem *item = [[HysteriaItem alloc] initWithAsset:asset index:index];
