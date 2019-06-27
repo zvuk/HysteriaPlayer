@@ -493,6 +493,16 @@ static dispatch_once_t onceToken;
     }];
 }
 
+- (void)seekToTime:(double)seconds withTolerance:(double)tolerance withCompletionBlock:(void (^)(BOOL))completionBlock
+{
+    CMTime toleranceCM = CMTimeMakeWithSeconds(tolerance, NSEC_PER_SEC);
+    [self.audioPlayer seekToTime:CMTimeMakeWithSeconds(seconds, NSEC_PER_SEC) toleranceBefore:toleranceCM toleranceAfter:toleranceCM completionHandler:^(BOOL finished) {
+        if (completionBlock) {
+            completionBlock(finished);
+        }
+    }];
+}
+
 - (NSInteger)getLastItemIndex
 {
     return self.lastItemIndex;

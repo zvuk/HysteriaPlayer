@@ -165,6 +165,7 @@ typedef NS_ENUM(NSInteger, HysteriaPlayerShuffleMode) {
 - (void)playNext;
 - (void)seekToTime:(double) CMTime;
 - (void)seekToTime:(double) CMTime withCompletionBlock:(void (^)(BOOL finished))completionBlock;
+- (void)seekToTime:(double)seconds withTolerance:(double)tolerance withCompletionBlock:(void (^)(BOOL))completionBlock;
 
 - (void)setPlayerRepeatMode:(HysteriaPlayerRepeatMode)mode;
 - (HysteriaPlayerRepeatMode)getPlayerRepeatMode;
