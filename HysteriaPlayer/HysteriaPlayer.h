@@ -146,7 +146,6 @@ typedef NS_ENUM(NSInteger, HysteriaPlayerShuffleMode) {
  *  @param index index which hysteriaPlayerAsyncSetUrlForItemAtIndex:preBuffer: sent you
  */
 - (void)setupPlayerItemWithUrl:(NSURL *)url index:(NSInteger)index withOffset:(NSTimeInterval)timeOffset;
-- (void)fetchAndPlayPlayerItem:(NSInteger)startAt;
 - (void)fetchAndPlayPlayerItem:(NSInteger)startAt withOffset:(NSTimeInterval)timeOffset;
 - (void)removeAllItems;
 - (void)removeQueuesAtPlayer;

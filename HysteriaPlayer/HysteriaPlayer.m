@@ -329,7 +329,9 @@ static dispatch_once_t onceToken;
         self.playerItems = playerItems;
     }
     
-    item.offsetTime = timeOffset;
+    if (timeOffset) {
+        item.offsetTime = timeOffset;
+    }
     [self insertPlayerItem:item];
 }
 
@@ -558,9 +560,17 @@ static dispatch_once_t onceToken;
         if (nowIndex + 1 < [self hysteriaPlayerItemsCount]) {
             if (self.audioPlayer.items.count > 1) {
                 [self willPlayPlayerItemAtIndex:nowIndex + 1];
+                HysteriaItem *nextItem = self.audioPlayer.items[1];
+                NSTimeInterval offset = nextItem.offsetTime;
                 [self.audioPlayer advanceToNextItem];
                 
                 if (![self isPlaying]) {
+                    [self play];
+                } else if (offset) {
+                    /// If item is switched with -advanceToNextItem method and we have an offset to start with
+                    /// we pause playback and relaunch it with -play method
+                    /// which will execute -seekToTime for target offset.
+                    [self pause];
                     [self play];
                 }
                 
