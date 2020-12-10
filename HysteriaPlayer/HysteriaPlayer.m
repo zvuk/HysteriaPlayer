@@ -162,8 +162,9 @@ static dispatch_once_t onceToken;
             NSLog(@"HysteriaPlayer: unable to register background playback");
         }
     }
-    
-    [self longTimeBufferBackground];
+    if (UIApplication.sharedApplication.applicationState != UIApplicationStateActive) {
+        [self longTimeBufferBackground];
+    }
 #endif
 }
 
