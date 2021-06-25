@@ -292,7 +292,7 @@ static dispatch_once_t onceToken;
     if (itemURL) {
         
         void(^setupPlayerBlock)() = ^() {
-            [self setupPlayerItemWithUrl:itemURL index:index withOffset:timeOffset];
+            [self setupPlayerItemWithUrl:itemURL index:index withOffset:timeOffset assetsOptions:nil];
             if (!preBuffer) {
                 [self play];
             }
@@ -315,13 +315,17 @@ static dispatch_once_t onceToken;
     }
 }
 
-- (void)setupPlayerItemWithUrl:(NSURL *)url index:(NSInteger)index withOffset:(NSTimeInterval)timeOffset
+- (void)setupPlayerItemWithUrl:(NSURL *)url
+                         index:(NSInteger)index
+                    withOffset:(NSTimeInterval)timeOffset
+                 assetsOptions:(NSDictionary *)assetOptions
 {
-    NSDictionary *requestHeaders = nil;
+    NSMutableDictionary *assetOptionsAll = [NSMutableDictionary dictionaryWithDictionary:assetOptions];
     if (self.streamRequestHeaders) {
-        requestHeaders = @{ @"AVURLAssetHTTPHeaderFieldsKey": self.streamRequestHeaders };
+        assetOptionsAll[@"AVURLAssetHTTPHeaderFieldsKey"] = self.streamRequestHeaders;
     }
-    AVURLAsset *asset = [[AVURLAsset alloc] initWithURL:url options:requestHeaders];
+    
+    AVURLAsset *asset = [[AVURLAsset alloc] initWithURL:url options:assetOptionsAll];
     HysteriaItem *item = [[HysteriaItem alloc] initWithAsset:asset index:index];
     
     if (self.isMemoryCached) {
