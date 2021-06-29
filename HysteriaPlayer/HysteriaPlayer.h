@@ -59,6 +59,13 @@ typedef NS_ENUM(NSInteger, HysteriaPlayerFailed) {
 
 @end
 
+@interface UrlWithFlac : NSObject
+
+@property (nonatomic, readonly) NSURL *url;
+@property (nonatomic, readonly) BOOL isFlac;
+
+@end
+
 @protocol HysteriaPlayerDataSource <NSObject>
 
 @optional
@@ -78,7 +85,8 @@ typedef NS_ENUM(NSInteger, HysteriaPlayerFailed) {
  *
  *  @return source URL
  */
-- (NSURL *)hysteriaPlayerURLForItemAtIndex:(NSInteger)index preBuffer:(BOOL)preBuffer;
+
+- (UrlWithFlac *)hysteriaPlayerURLForItemAtIndex:(NSInteger)index preBuffer:(BOOL)preBuffer;
 
 /**
  *  Source URL provider, would excute until you call setupPlayerItemWithUrl:index:

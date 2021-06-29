@@ -16,6 +16,20 @@
 
 static const NSTimeInterval HyseriaPlayerFinishedPlaybackStallingEpsilon = 1.;
 
+@implementation UrlWithFlac
+
+- (instancetype) initWithUrl:(NSURL *)url andFlac:(BOOL)flac{
+    self = [super init];
+    if (self){
+        _url = url;
+        _isFlac = flac;
+    }
+    
+    return self;
+}
+
+@end
+
 typedef NS_ENUM(NSInteger, PauseReason) {
     PauseReasonNone,
     PauseReasonForced,
@@ -283,16 +297,19 @@ static dispatch_once_t onceToken;
     NSAssert([self.datasource respondsToSelector:@selector(hysteriaPlayerURLForItemAtIndex:preBuffer:)] || [self.datasource respondsToSelector:@selector(hysteriaPlayerAsyncSetUrlForItemAtIndex:preBuffer:)], @"You didn't implement URL getter delegate from HysteriaPlayerDelegate, hysteriaPlayerURLForItemAtIndex:preBuffer: and hysteriaPlayerAsyncSetUrlForItemAtIndex:preBuffer: provides for the use of alternatives.");
     NSAssert([self hysteriaPlayerItemsCount] > index, ([NSString stringWithFormat:@"You are about to access index: %li URL when your HysteriaPlayer items count value is %li, please check hysteriaPlayerNumberOfItems or set itemsCount directly.", (unsigned long)index, (unsigned long)[self hysteriaPlayerItemsCount]]));
     
-    NSURL *itemURL;
+    UrlWithFlac *itemURLWithFlac;
     
     if ([self.datasource respondsToSelector:@selector(hysteriaPlayerURLForItemAtIndex:preBuffer:)]) {
-        itemURL = [self.datasource hysteriaPlayerURLForItemAtIndex:index preBuffer:preBuffer];
+        itemURLWithFlac = [self.datasource hysteriaPlayerURLForItemAtIndex:index preBuffer:preBuffer];
     }
     
-    if (itemURL) {
+    if (itemURLWithFlac) {
         
         void(^setupPlayerBlock)() = ^() {
-            [self setupPlayerItemWithUrl:itemURL index:index withOffset:timeOffset assetsOptions:nil];
+            [self setupPlayerItemWithUrl:itemURLWithFlac.url
+                                   index:index
+                              withOffset:timeOffset
+                           assetsOptions:itemURLWithFlac.isFlac ? @{AVURLAssetPreferPreciseDurationAndTimingKey:@YES} : nil];
             if (!preBuffer) {
                 [self play];
             }
