@@ -64,6 +64,8 @@ typedef NS_ENUM(NSInteger, HysteriaPlayerFailed) {
 @property (nonatomic, readonly) NSURL *url;
 @property (nonatomic, readonly) BOOL isFlac;
 
+- (instancetype)initWithUrl:(NSURL *)url andFlac:(BOOL)flac;
+
 @end
 
 @protocol HysteriaPlayerDataSource <NSObject>

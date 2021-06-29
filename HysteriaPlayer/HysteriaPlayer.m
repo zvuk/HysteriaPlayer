@@ -18,7 +18,7 @@ static const NSTimeInterval HyseriaPlayerFinishedPlaybackStallingEpsilon = 1.;
 
 @implementation UrlWithFlac
 
-- (instancetype) initWithUrl:(NSURL *)url andFlac:(BOOL)flac{
+- (instancetype)initWithUrl:(NSURL *)url andFlac:(BOOL)flac{
     self = [super init];
     if (self){
         _url = url;
