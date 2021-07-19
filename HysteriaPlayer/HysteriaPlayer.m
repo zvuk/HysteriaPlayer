@@ -939,6 +939,10 @@ static dispatch_once_t onceToken;
     
     if (isAtTheEndOfTheItem || isFullyBuffered) {
         
+        if ([self.delegate respondsToSelector:@selector(hysteriaPlayerDidReachEndOfItem)]) {
+            [self.delegate hysteriaPlayerDidReachEndOfItem];
+        }
+        
         NSInteger currentItemIndex = currentItem.index;
         
         if (_repeatMode == HysteriaPlayerRepeatModeOnce) {
